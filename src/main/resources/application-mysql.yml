@@ -1,0 +1,128 @@
+mybatis:
+  mapper-locations: classpath*:mappers/*.xml,classpath*:**/mapper/common/*Mapper.xml,classpath*:**/mapper/mysql/*Mapper.xml
+  config-location: classpath:jpaConfig-mysql.xml
+
+spring:
+
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    dynamic:
+      enabled: true
+      base-packages: com.github.hbq969
+      default-lookup-key: hikari
+    hikari:
+      jdbc-url: jdbc:mysql://docker.for.mac.host.internal:3306/openstack?useUnicode=true&allowPublicKeyRetrieval=true&characterEncoding=utf-8&useSSL=false&autoReconnect=true&failOverReadOnly=false&maxReconnects=15000
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: openstack
+      password: ENC(jQMsFqZmS9vfyR7wpItnfNoaphuKPCxPtFkR/VRBQhMXlUPqYX4zrAFnDNvo66Co)
+      maximum-pool-size: 10
+      minimum-idle: 2
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+
+  kafka:
+    producer:
+      bootstrap-servers: docker.for.mac.host.internal:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: 1
+      buffer-memory: 134217728
+      batch-size: 65536
+      properties:
+        heartbeat.interval.ms: 3000
+        max.block.ms: 10000
+#        sasl.mechanism: PLAIN
+#        security.protocol: SASL_PLAINTEXT
+#        sasl.jaas.config: ENC(wfUFL/Omh6mpEt2J/tJteC5jONhfnZD+9hR+4Mc7bnJnKwh6yhC8xMRv6yQl0dJTy5FhGlM7B8ubmI5VLFw6haz9wMBUcKwNkp4X+ktPNNj8OZaGkHvSITTeXS4KhMuNnUE9842xrRtCsqTbUPf+EhxnrrGof9Hnx7BjvgRgdq9CoQGm/dZsKPhY5nKjhU8B)
+        retry.backoff.ms: 500
+        linger.ms: 1000
+        max.in.flight.requests.per.connection: 1
+      retries: 120
+    consumer:
+      enabled: true
+      bootstrap-servers: docker.for.mac.host.internal:9092
+      enable-auto-commit: true
+      auto-commit-interval: 10s
+      max-poll-records: 500
+      auto-offset-reset: latest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      group-id: ${spring.application.name}
+      fetch-min-size: 10485760
+      fetch-max-wait: 2s
+      properties:
+        heartbeat.interval.ms: 3000
+        max.block.ms: 10000
+#        sasl.mechanism: PLAIN
+#        security.protocol: SASL_PLAINTEXT
+#        sasl.jaas.config: ENC(wfUFL/Omh6mpEt2J/tJteC5jONhfnZD+9hR+4Mc7bnJnKwh6yhC8xMRv6yQl0dJTy5FhGlM7B8ubmI5VLFw6haz9wMBUcKwNkp4X+ktPNNj8OZaGkHvSITTeXS4KhMuNnUE9842xrRtCsqTbUPf+EhxnrrGof9Hnx7BjvgRgdq9CoQGm/dZsKPhY5nKjhU8B)
+    listener:
+      type: batch
+      concurrency: 1
+      poll-timeout: 10s
+
+  cache:
+    ext:
+      enable: true
+      juc:
+        allow-null-values: true
+        max-capacity: 2000
+
+# swagger元数据信息
+swagger:
+  api-info:
+    enable: true
+    title: safebox web应用防护Restful API
+    description: safebox web应用防护Restful API
+    termsOfServiceUrl: http://127.0.0.1:${server.port}
+    version: v1.0
+    license: Apache LICENSE-2.0
+    licenseUrl: https://apache.org/licenses/LICENSE-2.0.txt
+
+# 数据字典管理
+dict:
+  enable: true
+  dialect: mysql
+  db:
+    jdbc-url: ${spring.datasource.hikari.jdbc-url}
+    driver-class-name: ${spring.datasource.hikari.driver-class-name}
+    username: ${spring.datasource.hikari.username}
+    password: ${spring.datasource.hikari.password}
+    maximum-pool-size: 10
+    minimum-idle: 2
+    idle-timeout: 600000
+    max-lifetime: 800000
+    connection-test-query: SELECT 1
+
+# 分布式锁
+lock:
+  spi:
+    redis:
+      enabled: false
+      standard:
+        host: docker.for.mac.host.internal
+        port: 6379
+
+# restful接口加解密
+encrypt:
+  config:
+    enabled: true
+  restful:
+    aes:
+      enabled: false
+      charset: utf-8
+      show-log: true
+      key: x
+    rsa:
+      enabled: false
+      charset: utf-8
+      show-log: true
+      private-key: x
+      public-key: x
+
+# restful接口日志记录
+advice:
+  log:
+    enabled: true
+  restful-limit:
+    enabled: true

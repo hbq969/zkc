@@ -1,0 +1,25 @@
+- hosts: "{{cicdhost}}"
+  serial: 1
+  remote_user: "{{NAMESPACE}}"
+  gather_facts: false
+  vars:
+    retries: 3
+    timeout: 10
+
+  tasks:
+    - name: restart k8s pod first
+      block:
+        - name: restart k8s pod
+          shell: kubectl set image deploy {{ APP_NAME }} {{ APP_NAME }}={{REMOTE_REPOSITORY}}/{{ PACKAGE_NAME }}:{{ PACKAGE_VERSION }} -n {{NAMESPACE}}
+      rescue:
+        - name: restart k8s pod again
+          shell: kubectl set image deploy {{ APP_NAME }} {{ APP_NAME }}={{REMOTE_REPOSITORY}}/{{ PACKAGE_NAME }}:{{ PACKAGE_VERSION }} -n {{NAMESPACE}}
+
+
+
+
+
+
+
+
+
