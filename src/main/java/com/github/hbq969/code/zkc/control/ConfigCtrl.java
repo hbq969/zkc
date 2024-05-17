@@ -28,7 +28,7 @@ import java.util.Set;
  * @author hbq
  */
 @RestController("config-web-ConfigCtrl")
-@RequestMapping(path = "/ui")
+@RequestMapping(path = "/ui-zkc")
 @Slf4j
 public class ConfigCtrl {
 
